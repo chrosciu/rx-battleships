@@ -54,7 +54,7 @@ class MyCanvas extends JComponent {
         public void mousePressed(MouseEvent e) {
             int x = e.getX() / CELL_SIZE - 1;
             int y = e.getY() / CELL_SIZE - 1;
-            if (x >=0 && x < SIZE && y >= 0 && y < SIZE) {
+            if (x >= 0 && x < SIZE && y >= 0 && y < SIZE) {
                 if (!shots[x][y]) {
                     shots[x][y] = true;
                     checkFinished();
