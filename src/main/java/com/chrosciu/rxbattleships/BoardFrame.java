@@ -18,7 +18,8 @@ public class BoardFrame extends JFrame {
     private void init() {
         Container contentPane = getContentPane();
         contentPane.add(boardCanvas);
-        setSize(580, 620);
+        setSize((Constants.BOARD_SIZE + 1) * Constants.CELL_SIZE + 30,
+                (Constants.BOARD_SIZE + 1) * Constants.CELL_SIZE + 70);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
     }
