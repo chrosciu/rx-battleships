@@ -1,6 +1,8 @@
 package com.chrosciu.rxbattleships;
 
 import lombok.RequiredArgsConstructor;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -23,9 +25,29 @@ public class BoardCanvas extends JComponent {
 
     @PostConstruct
     private void init() {
-        battleService.placeShips();
-        boardMouseAdapter.setBoardCanvas(this);
-        addMouseListener(boardMouseAdapter);
+        battleService.getBattleMono().subscribe(new Subscriber<Void>() {
+            @Override
+            public void onSubscribe(Subscription subscription) {
+
+            }
+
+            @Override
+            public void onNext(Void aVoid) {
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                boardMouseAdapter.setBoardCanvas(BoardCanvas.this);
+                addMouseListener(boardMouseAdapter);
+            }
+        });
+
     }
 
     @Override

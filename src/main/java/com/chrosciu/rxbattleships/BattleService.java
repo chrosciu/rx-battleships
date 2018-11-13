@@ -3,8 +3,10 @@ package com.chrosciu.rxbattleships;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
+import java.util.function.Consumer;
 
 @Component
 @RequiredArgsConstructor
@@ -19,16 +21,13 @@ public class BattleService {
     @Getter
     private boolean finished = false;
 
-    public void placeShips() {
-        placementService.placeShips();
-        Utils.copy(placementService.getShips(), ships);
-    }
+    @Getter
+    private Mono<Void> battleMono;
 
-//    @PostConstruct
-//    private void init() {
-//        placementService.placeShips();
-//        Utils.copy(placementService.getShips(), ships);
-//    }
+    @PostConstruct
+    private void init() {
+        battleMono = placementService.getPlacementMono().doOnSuccess(aVoid -> Utils.copy(placementService.getShips(), ships));
+    }
 
     public void takeShot(int x, int y) {
         if (!shots[x][y]) {
