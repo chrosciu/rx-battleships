@@ -1,43 +1,13 @@
 package com.chrosciu.rxbattleships;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoSink;
-
-import javax.annotation.PostConstruct;
-import java.util.function.Consumer;
 
 @Component
-@Slf4j
-public class PlacementService {
-    @Getter
+public class ShipPlacementServiceImpl implements ShipPlacementService {
     private boolean[][] ships = new boolean[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
 
-    @Getter
-    private Mono<Void> placementMono = Mono.create(MonoSink::success);
-
-    @PostConstruct
-    private void init() {
-        placementMono = Mono.create(MonoSink::success);
-        placeShips();
-    }
-
-    private void placeShips() {
-        placeShip(4);
-        placeShip(3);
-        placeShip(3);
-        placeShip(2);
-        placeShip(2);
-        placeShip(2);
-        placeShip(1);
-        placeShip(1);
-        placeShip(1);
-        placeShip(1);
-    }
-
-    private void placeShip(int size) {
+    @Override
+    public Ship placeShip(int size) {
         while (true) {
             int x;
             int y;
@@ -59,7 +29,8 @@ public class PlacementService {
                         ships[x][y+i] = true;
                     }
                 }
-                break;
+                Ship ship = Ship.builder().x(x).y(y).size(size).horizontal(horizontal).build();
+                return ship;
             }
         }
 
@@ -88,5 +59,4 @@ public class PlacementService {
         }
         return false;
     }
-
 }

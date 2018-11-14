@@ -3,7 +3,9 @@ package com.chrosciu.rxbattleships;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Signal;
 
 import javax.annotation.PostConstruct;
 import java.util.function.Consumer;
@@ -11,7 +13,7 @@ import java.util.function.Consumer;
 @Component
 @RequiredArgsConstructor
 public class BattleService {
-    private final PlacementService placementService;
+    private final ShipFluxService shipFluxService;
 
     @Getter
     private boolean[][] ships = new boolean[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
@@ -26,7 +28,19 @@ public class BattleService {
 
     @PostConstruct
     private void init() {
-        battleMono = placementService.getPlacementMono().doOnSuccess(aVoid -> Utils.copy(placementService.getShips(), ships));
+        Flux<Ship> shipFlux = shipFluxService.getShipFlux().doOnNext(new Consumer<Ship>() {
+            @Override
+            public void accept(Ship ship) {
+                for (int i = 0; i < ship.size; ++i) {
+                    if (ship.horizontal) {
+                        ships[ship.x+i][ship.y] = true;
+                    } else {
+                        ships[ship.x][ship.y+i] = true;
+                    }
+                }
+            }
+        });
+        battleMono = shipFlux.then();
     }
 
     public void takeShot(int x, int y) {
