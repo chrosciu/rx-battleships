@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.function.Consumer;
 
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
@@ -18,14 +19,14 @@ import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 @Component
 @RequiredArgsConstructor
 public class BoardCanvas extends JComponent {
-    private final BattleService battleService;
-    private final BoardMouseAdapter boardMouseAdapter;
+    private final BattleServiceImpl battleService;
+    private final BoardMouseAdapterImpl boardMouseAdapter;
 
     private static final float FONT_SIZE = 60;
 
     @PostConstruct
     private void init() {
-        battleService.getBattleMono().subscribe(new Subscriber<Void>() {
+        battleService.getBattleReadyMono().subscribe(new Subscriber<Void>() {
             @Override
             public void onSubscribe(Subscription subscription) {
 
@@ -43,11 +44,10 @@ public class BoardCanvas extends JComponent {
 
             @Override
             public void onComplete() {
-                boardMouseAdapter.setBoardCanvas(BoardCanvas.this);
                 addMouseListener(boardMouseAdapter);
             }
         });
-
+        battleService.getShotFlux().subscribe(shot -> repaint());
     }
 
     @Override
@@ -73,7 +73,7 @@ public class BoardCanvas extends JComponent {
 
             for (int x = 0; x < Constants.BOARD_SIZE; ++x) {
                 for (int y = 0; y < Constants.BOARD_SIZE; ++y) {
-                    char c = battleService.getShots()[x][y] ? battleService.getShips()[x][y] ? 'X' : 'O' : ' ';
+                    char c = battleService.getShot(x, y) ? battleService.getShip(x, y) ? 'X' : 'O' : ' ';
                     g2.drawString(Character.toString(c), Constants.CELL_SIZE + Constants.CELL_SIZE * x, 2 * Constants.CELL_SIZE + Constants.CELL_SIZE * y);
                 }
             }
