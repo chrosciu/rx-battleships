@@ -2,20 +2,25 @@ package com.chrosciu.rxbattleships;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class BattleServiceImpl implements BattleService {
     private final ShipFluxService shipFluxService;
     private final BoardMouseAdapter boardMouseAdapter;
 
-    private boolean[][] ships = new boolean[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
     private boolean[][] shots = new boolean[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
+    private List<ShipHits> shipHits = new ArrayList<>();
 
     @Getter
     private Mono<Void> battleReadyMono;
@@ -28,41 +33,40 @@ public class BattleServiceImpl implements BattleService {
         battleReadyMono = shipFluxService.getShipFlux()
                 .doOnNext(this::insertShip).then();
         shotResultFlux = boardMouseAdapter.getShotFlux()
-                .filter(this::noShotAlready)
-                .takeUntil(this::isFinished)
-                .map(this::getStatusAfterShot);
+                .filter(this::noShotAlreadyHere)
+                .doOnNext(this::markShot)
+                .map(this::getStatusAfterShot)
+                .takeUntil(this::allSunk);
     }
 
     private ShotResult getStatusAfterShot(Shot shot) {
-        return ShotResult.builder().
-                x(shot.x).y(shot.y).
-                fieldStatus(ships[shot.x][shot.y] ? FieldStatus.HIT : FieldStatus.MISSED)
-                .build();
+        for (int i = 0; i < shipHits.size(); ++i) {
+            CellStatus cellStatus = shipHits.get(i).takeShot(shot);
+            if (CellStatus.HIT == cellStatus || CellStatus.SUNK == cellStatus) {
+                log.info("{} -> {}", shipHits.get(i), cellStatus);
+                return ShotResult.builder().x(shot.x).y(shot.y).cellStatus(cellStatus).build();
+            }
+        }
+        log.info("{}", CellStatus.MISSED);
+        return ShotResult.builder().x(shot.x).y(shot.y).cellStatus(CellStatus.MISSED).build();
     }
 
     private void insertShip(Ship ship) {
-        for (int i = 0; i < ship.size; ++i) {
-            if (ship.horizontal) {
-                ships[ship.x+i][ship.y] = true;
-            } else {
-                ships[ship.x][ship.y+i] = true;
-            }
-        }
+        shipHits.add(new ShipHits(ship));
     }
 
-    private boolean noShotAlready(Shot shot) {
+    private boolean noShotAlreadyHere(Shot shot) {
         return !shots[shot.x][shot.y];
     }
 
-    private boolean isFinished(Shot shot) {
+    private void markShot(Shot shot) {
         shots[shot.x][shot.y] = true;
-        for (int x = 0; x < Constants.BOARD_SIZE; ++x) {
-            for (int y = 0; y < Constants.BOARD_SIZE; ++y) {
-                if (ships[x][y] && !shots[x][y]) {
-                    return false;
-                }
-            }
+    }
+
+    private boolean allSunk(ShotResult shotResult) {
+        if (CellStatus.SUNK != shotResult.cellStatus) {
+            return false;
         }
-        return true;
+        return shipHits.stream().allMatch(ShipHits::isSunk);
     }
 }

@@ -1,13 +1,13 @@
 package com.chrosciu.rxbattleships;
 
 import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Builder
+@ToString
 public class Ship {
-    final int x;
-    final int y;
-    final int size;
-    final boolean horizontal;
+    public final int x;
+    public final int y;
+    public final int size;
+    public final boolean horizontal;
 }

@@ -16,12 +16,12 @@ import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 @Component
 @RequiredArgsConstructor
 public class BoardCanvas extends JComponent {
-    private final BattleServiceImpl battleService;
+    private final BattleService battleService;
     private final MouseAdapter mouseAdapter;
 
     private static final float FONT_SIZE = 60;
 
-    private FieldStatus[][] fieldStatuses = new FieldStatus[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
+    private CellStatus[][] cellStatuses = new CellStatus[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
     private boolean finished;
 
     @PostConstruct
@@ -29,14 +29,14 @@ public class BoardCanvas extends JComponent {
         finished = false;
         for (int i = 0; i < Constants.BOARD_SIZE; ++i) {
             for (int j = 0; j < Constants.BOARD_SIZE; ++j) {
-                fieldStatuses[i][j] = FieldStatus.UNTOUCHED;
+                cellStatuses[i][j] = CellStatus.UNTOUCHED;
             }
         }
         battleService.getBattleReadyMono()
                 .subscribe(null, null, () -> addMouseListener(mouseAdapter));
         battleService.getShotResultFlux()
                 .subscribe(shotResult -> {
-                    fieldStatuses[shotResult.x][shotResult.y] = shotResult.fieldStatus;
+                    cellStatuses[shotResult.x][shotResult.y] = shotResult.cellStatus;
                     repaint();
                 }, null, () ->  {
                     finished = true;
@@ -72,7 +72,7 @@ public class BoardCanvas extends JComponent {
 
             for (int x = 0; x < Constants.BOARD_SIZE; ++x) {
                 for (int y = 0; y < Constants.BOARD_SIZE; ++y) {
-                    char c = getFieldChar(fieldStatuses[x][y]);
+                    char c = getFieldChar(cellStatuses[x][y]);
                     g2.drawString(Character.toString(c),
                             Constants.CELL_SIZE + Constants.CELL_SIZE * x,
                             2 * Constants.CELL_SIZE + Constants.CELL_SIZE * y);
@@ -82,11 +82,13 @@ public class BoardCanvas extends JComponent {
         }
     }
 
-    private char getFieldChar(FieldStatus fieldStatus) {
-        switch (fieldStatus) {
+    private char getFieldChar(CellStatus cellStatus) {
+        switch (cellStatus) {
             case MISSED:
                 return 'O';
             case HIT:
+                return 'H';
+            case SUNK:
                 return 'X';
             default:
                 return ' ';

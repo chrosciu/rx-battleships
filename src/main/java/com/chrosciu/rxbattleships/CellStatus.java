@@ -1,6 +1,6 @@
 package com.chrosciu.rxbattleships;
 
-public enum FieldStatus {
+public enum CellStatus {
     UNTOUCHED,
     MISSED,
     HIT,
