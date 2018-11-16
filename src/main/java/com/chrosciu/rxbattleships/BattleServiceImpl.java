@@ -7,13 +7,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
-import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
 public class BattleServiceImpl implements BattleService {
     private final ShipFluxService shipFluxService;
-    private final BoardMouseListener boardMouseListener;
+    private final BoardMouseAdapter boardMouseAdapter;
 
     private boolean[][] ships = new boolean[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
     private boolean[][] shots = new boolean[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
@@ -28,7 +27,7 @@ public class BattleServiceImpl implements BattleService {
     private void init() {
         battleReadyMono = shipFluxService.getShipFlux()
                 .doOnNext(this::insertShip).then();
-        shotResultFlux = boardMouseListener.getShotFlux()
+        shotResultFlux = boardMouseAdapter.getShotFlux()
                 .filter(this::noShotAlready)
                 .takeUntil(this::isFinished)
                 .map(this::getStatusAfterShot);

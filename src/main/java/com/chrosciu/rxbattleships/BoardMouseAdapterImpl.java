@@ -11,7 +11,7 @@ import java.awt.event.MouseEvent;
 
 @Component
 @RequiredArgsConstructor
-public class BoardMouseListenerImpl implements BoardMouseListener {
+public class BoardMouseAdapterImpl implements BoardMouseAdapter {
 
     @Getter
     private Flux<Shot> shotFlux;
@@ -32,26 +32,4 @@ public class BoardMouseListenerImpl implements BoardMouseListener {
             shotFluxSink.next(shot);
         }
     }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
-
-
 }

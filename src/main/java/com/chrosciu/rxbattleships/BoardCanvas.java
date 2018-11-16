@@ -17,7 +17,7 @@ import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 @RequiredArgsConstructor
 public class BoardCanvas extends JComponent {
     private final BattleServiceImpl battleService;
-    private final BoardMouseListener boardMouseListener;
+    private final MouseAdapter mouseAdapter;
 
     private static final float FONT_SIZE = 60;
 
@@ -33,14 +33,14 @@ public class BoardCanvas extends JComponent {
             }
         }
         battleService.getBattleReadyMono()
-                .subscribe(null, null, () -> addMouseListener(boardMouseListener));
+                .subscribe(null, null, () -> addMouseListener(mouseAdapter));
         battleService.getShotResultFlux()
                 .subscribe(shotResult -> {
                     fieldStatuses[shotResult.x][shotResult.y] = shotResult.fieldStatus;
                     repaint();
                 }, null, () ->  {
                     finished = true;
-                    removeMouseListener(boardMouseListener);
+                    removeMouseListener(mouseAdapter);
                     repaint();
                 });
     }
