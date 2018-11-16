@@ -7,8 +7,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
@@ -23,26 +22,23 @@ public class BattleServiceImpl implements BattleService {
     private Mono<Void> battleReadyMono;
 
     @Getter
-    private Flux<Shot> shotFlux;
-
-    @Override
-    public boolean getShot(int x, int y) {
-        return shots[x][y];
-    }
-
-    @Override
-    public boolean getShip(int x, int y) {
-        return ships[x][y];
-    }
+    private Flux<ShotResult> shotResultFlux;
 
     @PostConstruct
     private void init() {
-        Flux<Ship> shipFlux = shipFluxService.getShipFlux()
-                .doOnNext(this::insertShip);
-        battleReadyMono = shipFlux.then();
-        shotFlux = boardMouseListener.getShotFlux()
+        battleReadyMono = shipFluxService.getShipFlux()
+                .doOnNext(this::insertShip).then();
+        shotResultFlux = boardMouseListener.getShotFlux()
                 .filter(this::noShotAlready)
-                .takeUntil(this::isFinished);
+                .takeUntil(this::isFinished)
+                .map(this::getStatusAfterShot);
+    }
+
+    private ShotResult getStatusAfterShot(Shot shot) {
+        return ShotResult.builder().
+                x(shot.x).y(shot.y).
+                fieldStatus(ships[shot.x][shot.y] ? FieldStatus.HIT : FieldStatus.MISSED)
+                .build();
     }
 
     private void insertShip(Ship ship) {

@@ -14,6 +14,8 @@ import java.awt.Container;
 public class BoardFrame extends JFrame {
     private final BoardCanvas boardCanvas;
 
+    private static final String TITLE = "RxBattleships";
+
     @PostConstruct
     private void init() {
         Container contentPane = getContentPane();
@@ -21,6 +23,7 @@ public class BoardFrame extends JFrame {
         setSize((Constants.BOARD_SIZE + 1) * Constants.CELL_SIZE + 30,
                 (Constants.BOARD_SIZE + 1) * Constants.CELL_SIZE + 70);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setTitle(TITLE);
         setVisible(true);
     }
 }
