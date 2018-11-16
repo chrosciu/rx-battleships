@@ -2,6 +2,8 @@ package com.chrosciu.rxbattleships;
 
 import reactor.core.publisher.Flux;
 
-public interface BoardMouseAdapter {
+import java.awt.event.MouseListener;
+
+public interface BoardMouseListener extends MouseListener {
     Flux<Shot> getShotFlux();
 }

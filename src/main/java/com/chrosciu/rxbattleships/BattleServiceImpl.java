@@ -8,18 +8,16 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 @Component
 @RequiredArgsConstructor
 public class BattleServiceImpl implements BattleService {
     private final ShipFluxService shipFluxService;
-    private final BoardMouseAdapter boardMouseAdapter;
+    private final BoardMouseListener boardMouseListener;
 
     private boolean[][] ships = new boolean[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
     private boolean[][] shots = new boolean[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
-
-    @Getter
-    private boolean finished = false;
 
     @Getter
     private Mono<Void> battleReadyMono;
@@ -39,35 +37,37 @@ public class BattleServiceImpl implements BattleService {
 
     @PostConstruct
     private void init() {
-        Flux<Ship> shipFlux = shipFluxService.getShipFlux().doOnNext(new Consumer<Ship>() {
-            @Override
-            public void accept(Ship ship) {
-                for (int i = 0; i < ship.size; ++i) {
-                    if (ship.horizontal) {
-                        ships[ship.x+i][ship.y] = true;
-                    } else {
-                        ships[ship.x][ship.y+i] = true;
-                    }
-                }
-            }
-        });
+        Flux<Ship> shipFlux = shipFluxService.getShipFlux()
+                .doOnNext(this::insertShip);
         battleReadyMono = shipFlux.then();
-        shotFlux = boardMouseAdapter.getShotFlux().doOnNext(shot -> {
-            if (!shots[shot.x][shot.y]) {
-                shots[shot.x][shot.y] = true;
-                checkFinished();
-            }
-        });
+        shotFlux = boardMouseListener.getShotFlux()
+                .filter(this::noShotAlready)
+                .takeUntil(this::isFinished);
     }
 
-    private void checkFinished() {
+    private void insertShip(Ship ship) {
+        for (int i = 0; i < ship.size; ++i) {
+            if (ship.horizontal) {
+                ships[ship.x+i][ship.y] = true;
+            } else {
+                ships[ship.x][ship.y+i] = true;
+            }
+        }
+    }
+
+    private boolean noShotAlready(Shot shot) {
+        return !shots[shot.x][shot.y];
+    }
+
+    private boolean isFinished(Shot shot) {
+        shots[shot.x][shot.y] = true;
         for (int x = 0; x < Constants.BOARD_SIZE; ++x) {
             for (int y = 0; y < Constants.BOARD_SIZE; ++y) {
                 if (ships[x][y] && !shots[x][y]) {
-                    return;
+                    return false;
                 }
             }
         }
-        finished = true;
+        return true;
     }
 }

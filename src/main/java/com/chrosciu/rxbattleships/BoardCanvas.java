@@ -1,8 +1,6 @@
 package com.chrosciu.rxbattleships;
 
 import lombok.RequiredArgsConstructor;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -11,7 +9,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.util.function.Consumer;
 
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
@@ -20,34 +17,23 @@ import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 @RequiredArgsConstructor
 public class BoardCanvas extends JComponent {
     private final BattleServiceImpl battleService;
-    private final BoardMouseAdapterImpl boardMouseAdapter;
+    private final BoardMouseListener boardMouseListener;
 
     private static final float FONT_SIZE = 60;
 
+    private boolean finished;
+
     @PostConstruct
     private void init() {
-        battleService.getBattleReadyMono().subscribe(new Subscriber<Void>() {
-            @Override
-            public void onSubscribe(Subscription subscription) {
-
-            }
-
-            @Override
-            public void onNext(Void aVoid) {
-
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-
-            }
-
-            @Override
-            public void onComplete() {
-                addMouseListener(boardMouseAdapter);
-            }
-        });
-        battleService.getShotFlux().subscribe(shot -> repaint());
+        finished = false;
+        battleService.getBattleReadyMono()
+                .subscribe(null, null, () -> addMouseListener(boardMouseListener));
+        battleService.getShotFlux()
+                .subscribe(shot -> repaint(), null, () ->  {
+                    finished = true;
+                    removeMouseListener(boardMouseListener);
+                    repaint();
+                });
     }
 
     @Override
@@ -56,7 +42,7 @@ public class BoardCanvas extends JComponent {
         Font newFont = currentFont.deriveFont(FONT_SIZE);
         g.setFont(newFont);
 
-        if (battleService.isFinished()) {
+        if (finished) {
             g.setColor(Color.RED);
         }
 

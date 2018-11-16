@@ -7,12 +7,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 
 import javax.annotation.PostConstruct;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 @Component
 @RequiredArgsConstructor
-public class BoardMouseAdapterImpl extends MouseAdapter implements BoardMouseAdapter {
+public class BoardMouseListenerImpl implements BoardMouseListener {
 
     @Getter
     private Flux<Shot> shotFlux;
@@ -33,4 +32,26 @@ public class BoardMouseAdapterImpl extends MouseAdapter implements BoardMouseAda
             shotFluxSink.next(shot);
         }
     }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+
 }
