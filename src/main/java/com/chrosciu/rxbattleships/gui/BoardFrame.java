@@ -1,7 +1,7 @@
-package com.chrosciu.rxbattleships;
+package com.chrosciu.rxbattleships.gui;
 
+import com.chrosciu.rxbattleships.config.Constants;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;

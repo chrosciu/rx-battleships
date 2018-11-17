@@ -1,13 +1,11 @@
-package com.chrosciu.rxbattleships;
+package com.chrosciu.rxbattleships.model;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 

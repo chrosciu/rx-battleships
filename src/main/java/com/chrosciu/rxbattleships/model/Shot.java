@@ -1,8 +1,6 @@
-package com.chrosciu.rxbattleships;
+package com.chrosciu.rxbattleships.model;
 
 import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 @Builder
 public class Shot {

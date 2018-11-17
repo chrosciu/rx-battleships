@@ -1,4 +1,4 @@
-package com.chrosciu.rxbattleships;
+package com.chrosciu.rxbattleships.config;
 
 public class Constants {
     public static final int BOARD_SIZE = 10;

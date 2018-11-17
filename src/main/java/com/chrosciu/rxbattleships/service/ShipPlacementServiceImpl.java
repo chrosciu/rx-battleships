@@ -1,5 +1,7 @@
-package com.chrosciu.rxbattleships;
+package com.chrosciu.rxbattleships.service;
 
+import com.chrosciu.rxbattleships.config.Constants;
+import com.chrosciu.rxbattleships.model.Ship;
 import org.springframework.stereotype.Component;
 
 @Component

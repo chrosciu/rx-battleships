@@ -1,5 +1,7 @@
-package com.chrosciu.rxbattleships;
+package com.chrosciu.rxbattleships.service;
 
+import com.chrosciu.rxbattleships.config.Constants;
+import com.chrosciu.rxbattleships.model.Ship;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -8,7 +10,6 @@ import reactor.core.publisher.FluxSink;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
-import java.util.function.IntConsumer;
 
 @Component
 @RequiredArgsConstructor

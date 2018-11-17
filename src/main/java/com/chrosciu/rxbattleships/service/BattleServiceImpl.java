@@ -1,5 +1,12 @@
-package com.chrosciu.rxbattleships;
+package com.chrosciu.rxbattleships.service;
 
+import com.chrosciu.rxbattleships.config.Constants;
+import com.chrosciu.rxbattleships.gui.BoardMouseAdapter;
+import com.chrosciu.rxbattleships.model.Ship;
+import com.chrosciu.rxbattleships.model.ShipWithHits;
+import com.chrosciu.rxbattleships.model.Shot;
+import com.chrosciu.rxbattleships.model.ShotResult;
+import com.chrosciu.rxbattleships.model.ShotWithResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

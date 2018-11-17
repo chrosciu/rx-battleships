@@ -1,5 +1,6 @@
 package com.chrosciu.rxbattleships;
 
+import com.chrosciu.rxbattleships.gui.BoardCanvas;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;

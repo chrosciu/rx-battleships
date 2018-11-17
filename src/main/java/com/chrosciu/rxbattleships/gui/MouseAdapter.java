@@ -1,4 +1,4 @@
-package com.chrosciu.rxbattleships;
+package com.chrosciu.rxbattleships.gui;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

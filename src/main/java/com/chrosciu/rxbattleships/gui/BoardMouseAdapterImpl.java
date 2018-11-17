@@ -1,5 +1,7 @@
-package com.chrosciu.rxbattleships;
+package com.chrosciu.rxbattleships.gui;
 
+import com.chrosciu.rxbattleships.config.Constants;
+import com.chrosciu.rxbattleships.model.Shot;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
