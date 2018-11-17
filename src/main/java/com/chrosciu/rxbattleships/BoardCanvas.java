@@ -21,22 +21,17 @@ public class BoardCanvas extends JComponent {
 
     private static final float FONT_SIZE = 60;
 
-    private CellStatus[][] cellStatuses = new CellStatus[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
+    private ShotResult[][] shotResults = new ShotResult[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
     private boolean finished;
 
     @PostConstruct
     private void init() {
         finished = false;
-        for (int i = 0; i < Constants.BOARD_SIZE; ++i) {
-            for (int j = 0; j < Constants.BOARD_SIZE; ++j) {
-                cellStatuses[i][j] = CellStatus.UNTOUCHED;
-            }
-        }
         battleService.getBattleReadyMono()
                 .subscribe(null, null, () -> addMouseListener(mouseAdapter));
         battleService.getShotResultFlux()
                 .subscribe(shotResult -> {
-                    cellStatuses[shotResult.x][shotResult.y] = shotResult.cellStatus;
+                    shotResults[shotResult.x][shotResult.y] = shotResult.shotResult;
                     repaint();
                 }, null, () ->  {
                     finished = true;
@@ -72,7 +67,7 @@ public class BoardCanvas extends JComponent {
 
             for (int x = 0; x < Constants.BOARD_SIZE; ++x) {
                 for (int y = 0; y < Constants.BOARD_SIZE; ++y) {
-                    char c = getFieldChar(cellStatuses[x][y]);
+                    char c = getFieldChar(shotResults[x][y]);
                     g2.drawString(Character.toString(c),
                             Constants.CELL_SIZE + Constants.CELL_SIZE * x,
                             2 * Constants.CELL_SIZE + Constants.CELL_SIZE * y);
@@ -82,8 +77,11 @@ public class BoardCanvas extends JComponent {
         }
     }
 
-    private char getFieldChar(CellStatus cellStatus) {
-        switch (cellStatus) {
+    private char getFieldChar(ShotResult shotResult) {
+        if (null == shotResult) {
+            return ' ';
+        }
+        switch (shotResult) {
             case MISSED:
                 return 'O';
             case HIT:

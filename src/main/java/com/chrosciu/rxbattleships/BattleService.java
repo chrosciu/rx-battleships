@@ -5,5 +5,5 @@ import reactor.core.publisher.Mono;
 
 public interface BattleService {
     Mono<Void> getBattleReadyMono();
-    Flux<ShotResult> getShotResultFlux();
+    Flux<ShotWithResult> getShotResultFlux();
 }

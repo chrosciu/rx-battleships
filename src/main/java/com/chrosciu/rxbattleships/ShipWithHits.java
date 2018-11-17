@@ -13,28 +13,29 @@ import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 @ToString
-public class ShipHits {
+public class ShipWithHits {
     @NonNull private final Ship ship;
     private int hits = 0;
 
-    public void takeShot() {
+    public List<ShotWithResult> takeShot(Shot shot) {
+        if (!isHit(shot)) {
+            return Collections.singletonList(ShotWithResult.of(shot, ShotResult.MISSED));
+        }
         if (!isSunk()) {
             ++hits;
+        }
+        if(isSunk()) {
+            List<Shot> shots = IntStream.range(0, ship.size).mapToObj(value -> ship.horizontal ?
+                    Shot.builder().x(ship.x + value).y(ship.y).build()
+                    : Shot.builder().x(ship.x).y(ship.y + value).build()).collect(Collectors.toList());
+            return shots.stream().map(shot1 -> ShotWithResult.of(shot1, ShotResult.SUNK)).collect(Collectors.toList());
+        } else {
+            return Collections.singletonList(ShotWithResult.of(shot, ShotResult.HIT));
         }
     }
 
     public boolean isSunk() {
         return hits >= ship.size;
-    }
-
-    public List<Shot> getShotsToReport(Shot shot) {
-        if (isSunk()) {
-            return IntStream.range(0, ship.size).mapToObj(value -> ship.horizontal ?
-                    Shot.builder().x(ship.x + value).y(ship.y).build()
-                    : Shot.builder().x(ship.x).y(ship.y + value).build()).collect(Collectors.toList());
-        } else {
-            return Collections.singletonList(shot);
-        }
     }
 
     public boolean isHit(Shot shot) {
