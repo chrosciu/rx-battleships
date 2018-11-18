@@ -12,7 +12,6 @@ public class RxBattleshipsApplication {
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = new SpringApplicationBuilder(RxBattleshipsApplication.class)
                 .headless(false).run(args);
-
         EventQueue.invokeLater(() -> {
             BoardCanvas boardCanvas = ctx.getBean(BoardCanvas.class);
             boardCanvas.setVisible(true);
