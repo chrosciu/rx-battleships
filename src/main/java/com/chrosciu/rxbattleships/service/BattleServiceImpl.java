@@ -9,6 +9,7 @@ import com.chrosciu.rxbattleships.model.ShotWithResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
@@ -42,15 +44,16 @@ public class BattleServiceImpl implements BattleService {
         shotResultFlux = shotFluxService.getShotFlux()
                 .filter(this::noShotAlreadyHere)
                 .doOnNext(this::markShot)
-                .flatMap(this::getShotResultsAfterShot)
-                .takeUntil(this::allSunk);
+                .map(this::getShotResultsAfterShot)
+                .takeUntil(this::allSunk)
+                .flatMap(Flux::fromIterable);
     }
 
-    private Flux<ShotWithResult> getShotResultsAfterShot(Shot shot) {
+    private List<ShotWithResult> getShotResultsAfterShot(Shot shot) {
         Optional<ShipWithHits> shipHitsOptional = shipsWithHits.stream().filter(shipWithHits -> shipWithHits.isHit(shot)).findFirst();
         List<ShotWithResult> shotWithResults = shipHitsOptional.map(shipWithHits -> shipWithHits.takeShot(shot))
                 .orElse(Collections.singletonList(ShotWithResult.of(shot, ShotResult.MISSED)));
-        return Flux.fromIterable(shotWithResults);
+        return shotWithResults;
     }
 
     private void insertShip(Ship ship) {
@@ -65,7 +68,7 @@ public class BattleServiceImpl implements BattleService {
         shots[shot.x][shot.y] = true;
     }
 
-    private boolean allSunk(ShotWithResult shotWithResult) {
+    private boolean allSunk(List<ShotWithResult> shotWithResults) {
         return shipsWithHits.stream().allMatch(ShipWithHits::isSunk);
     }
 }
