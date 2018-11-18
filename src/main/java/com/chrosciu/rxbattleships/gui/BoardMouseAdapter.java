@@ -4,5 +4,5 @@ import com.chrosciu.rxbattleships.model.Shot;
 import reactor.core.publisher.Flux;
 
 public interface BoardMouseAdapter extends MouseAdapter {
-    Flux<Shot> getShotFlux();
+    void registerShotListener(ShotListener shotListener);
 }
