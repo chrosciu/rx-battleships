@@ -2,13 +2,9 @@ package com.chrosciu.rxbattleships.gui;
 
 import com.chrosciu.rxbattleships.config.Constants;
 import com.chrosciu.rxbattleships.model.Shot;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
 
-import javax.annotation.PostConstruct;
 import java.awt.event.MouseEvent;
 
 @Component

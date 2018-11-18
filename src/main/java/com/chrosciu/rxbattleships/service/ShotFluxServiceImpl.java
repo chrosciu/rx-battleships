@@ -1,7 +1,6 @@
 package com.chrosciu.rxbattleships.service;
 
 import com.chrosciu.rxbattleships.gui.BoardMouseAdapter;
-import com.chrosciu.rxbattleships.gui.ShotListener;
 import com.chrosciu.rxbattleships.model.Shot;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

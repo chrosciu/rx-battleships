@@ -8,8 +8,6 @@ import com.chrosciu.rxbattleships.model.ShotResult;
 import com.chrosciu.rxbattleships.model.ShotWithResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,11 +17,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class BattleServiceImpl implements BattleService {
     private final ShipFluxService shipFluxService;
     private final ShotFluxService shotFluxService;
