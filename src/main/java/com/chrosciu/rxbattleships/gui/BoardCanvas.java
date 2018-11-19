@@ -3,19 +3,33 @@ package com.chrosciu.rxbattleships.gui;
 import com.chrosciu.rxbattleships.model.ShotResult;
 import com.chrosciu.rxbattleships.model.ShotWithResult;
 import com.chrosciu.rxbattleships.service.BattleService;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static com.chrosciu.rxbattleships.config.Constants.BOARD_SIZE;
 import static com.chrosciu.rxbattleships.config.Constants.CELL_SIZE;
+import static com.chrosciu.rxbattleships.config.Constants.FONT_SIZE;
+import static com.chrosciu.rxbattleships.model.ShotResult.HIT;
+import static com.chrosciu.rxbattleships.model.ShotResult.MISSED;
+import static com.chrosciu.rxbattleships.model.ShotResult.SUNK;
+import static java.awt.Color.BLACK;
+import static java.awt.Color.BLUE;
+import static java.awt.Color.GREEN;
+import static java.awt.Color.RED;
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 
@@ -25,23 +39,58 @@ public class BoardCanvas extends JComponent {
     private final BattleService battleService;
     private final MouseAdapter mouseAdapter;
 
-    private static final float FONT_SIZE = 60;
+    private static final String WAITING_FOR_SHIPS = "Waiting for ships...";
+    private static final String SHIPS_READY = "Ships ready !";
+
+    private static final Map<ShotResult, Character> SHOT_RESULT_CODES =
+            new HashMap<ShotResult, Character>(){{
+        put(MISSED, 'O');
+        put(HIT, 'H');
+        put(SUNK, 'X');
+    }};
+    private static final Character NO_SHOT_RESULT_CODE = ' ';
+
+    private class TimeMeasurer {
+        long startTime;
+        long stopTime;
+
+        private void start() {
+            startTime = System.currentTimeMillis();
+        }
+
+        private void stop() {
+            stopTime = System.currentTimeMillis();
+            alert( "Time elapsed: " + (stopTime - startTime) / 1000 + " s.");
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    private enum GameState {
+        INITIAL(BLUE),
+        STARTED(BLACK),
+        FINISHED(GREEN),
+        FAILED(RED);
+
+        private Color color;
+    }
 
     private ShotResult[][] shotResults = new ShotResult[BOARD_SIZE][BOARD_SIZE];
-    private boolean started;
-    private boolean finished;
+    private TimeMeasurer timeMeasurer = new TimeMeasurer();
+    private GameState gameState = GameState.INITIAL;
 
     @PostConstruct
     private void init() {
-        finished = false;
-        battleService.getBattleReadyMono()
+        battleService.getShipsReadyMono()
                 .subscribe(null, null, this::onShipsReady);
         battleService.getShotResultFlux()
-                .subscribe(this::onShotPerformed, null, this::onAllShipsSunk);
+                .subscribe(this::onShotPerformed, this::onError, this::onAllShipsSunk);
     }
 
     private void onShipsReady() {
-        started = true;
+        alert(SHIPS_READY);
+        timeMeasurer.start();
+        gameState = GameState.STARTED;
         addMouseListener(mouseAdapter);
         repaint();
     }
@@ -52,9 +101,19 @@ public class BoardCanvas extends JComponent {
     }
 
     private void onAllShipsSunk() {
-        finished = true;
         removeMouseListener(mouseAdapter);
+        gameState = GameState.FINISHED;
+        timeMeasurer.stop();
         repaint();
+    }
+
+    private void onError(Throwable t) {
+        gameState = GameState.FAILED;
+        alert(t.getMessage());
+    }
+
+    private void alert(String message) {
+        JOptionPane.showMessageDialog(null, message);
     }
 
     @Override
@@ -63,7 +122,11 @@ public class BoardCanvas extends JComponent {
         setFont(graphics2D);
         setColor(graphics2D);
         drawLabels(graphics2D);
-        drawFields(graphics2D);
+        if (GameState.INITIAL.equals(gameState)) {
+            drawMessage(graphics2D, WAITING_FOR_SHIPS);
+        } else {
+            drawFields(graphics2D);
+        }
     }
 
     private void setFont(Graphics2D graphics2D) {
@@ -74,8 +137,7 @@ public class BoardCanvas extends JComponent {
     }
 
     private void setColor(Graphics2D graphics2D) {
-        Color color = started ? (finished ? Color.GREEN : Color.BLACK) : Color.RED;
-        graphics2D.setColor(color);
+        graphics2D.setColor(gameState.getColor());
     }
 
     private void drawLabels(Graphics2D graphics2D) {
@@ -85,6 +147,10 @@ public class BoardCanvas extends JComponent {
         });
     }
 
+    private void drawMessage(Graphics2D graphics2D, String message) {
+        graphics2D.drawString(message, CELL_SIZE, 2 * CELL_SIZE);
+    }
+
     private void drawFields(Graphics2D graphics2D) {
         IntStream.range(0, BOARD_SIZE).forEach(i -> {
             IntStream.range(0, BOARD_SIZE).forEach(j -> drawField(graphics2D, i, j));
@@ -92,23 +158,12 @@ public class BoardCanvas extends JComponent {
     }
 
     private void drawField(Graphics2D graphics2D, int i, int j) {
-        graphics2D.drawString(Character.toString(getFieldChar(shotResults[i][j])),
+        graphics2D.drawString(Character.toString(getShotResultCode(shotResults[i][j])),
                 (i + 1) * CELL_SIZE, (j + 2) * CELL_SIZE);
     }
 
-    private char getFieldChar(ShotResult shotResult) {
-        if (null == shotResult) {
-            return ' ';
-        }
-        switch (shotResult) {
-            case MISSED:
-                return 'O';
-            case HIT:
-                return 'H';
-            case SUNK:
-                return 'X';
-            default:
-                return ' ';
-        }
+    private char getShotResultCode(ShotResult shotResult) {
+        return Optional.ofNullable(shotResult)
+                .map(SHOT_RESULT_CODES::get).orElse(NO_SHOT_RESULT_CODE);
     }
 }

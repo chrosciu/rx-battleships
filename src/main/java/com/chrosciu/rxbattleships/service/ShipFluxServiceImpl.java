@@ -29,6 +29,11 @@ public class ShipFluxServiceImpl implements ShipFluxService {
     }
 
     private void placeShips() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Arrays.stream(Constants.SHIP_SIZES)
                 .forEach(size -> shipFluxSink.next(shipPlacementService.placeShip(size)));
         shipFluxSink.complete();

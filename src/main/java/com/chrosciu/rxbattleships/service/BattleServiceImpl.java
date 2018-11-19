@@ -13,6 +13,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,28 +30,30 @@ public class BattleServiceImpl implements BattleService {
     private List<ShipWithHits> shipsWithHits = new ArrayList<>();
 
     @Getter
-    private Mono<Void> battleReadyMono;
+    private Mono<Void> shipsReadyMono;
 
     @Getter
     private Flux<ShotWithResult> shotResultFlux;
 
     @PostConstruct
     private void init() {
-        battleReadyMono = shipFluxService.getShipFlux()
+        shipsReadyMono = shipFluxService.getShipFlux()
                 .doOnNext(this::insertShip).then();
         shotResultFlux = shotFluxService.getShotFlux()
+                .take(20)
+                .timeout(Flux.never(), shot -> Mono.delay(Duration.of(10, ChronoUnit.SECONDS)))
                 .filter(this::noShotAlreadyHere)
                 .doOnNext(this::markShot)
                 .map(this::getShotResultsAfterShot)
                 .takeUntil(this::allSunk)
-                .flatMap(Flux::fromIterable);
+                .flatMap(Flux::fromIterable)
+                .concatWith(Flux.error(new Exception("Too many shot attempts !")));
     }
 
     private List<ShotWithResult> getShotResultsAfterShot(Shot shot) {
         Optional<ShipWithHits> shipHitsOptional = shipsWithHits.stream().filter(shipWithHits -> shipWithHits.isHit(shot)).findFirst();
-        List<ShotWithResult> shotWithResults = shipHitsOptional.map(shipWithHits -> shipWithHits.takeShot(shot))
+        return shipHitsOptional.map(shipWithHits -> shipWithHits.takeShot(shot))
                 .orElse(Collections.singletonList(ShotWithResult.of(shot, ShotResult.MISSED)));
-        return shotWithResults;
     }
 
     private void insertShip(Ship ship) {

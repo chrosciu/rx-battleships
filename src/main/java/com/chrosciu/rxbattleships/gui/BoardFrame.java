@@ -9,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import java.awt.Container;
 
+import static com.chrosciu.rxbattleships.config.Constants.BOARD_SIZE;
+
 @Component
 @RequiredArgsConstructor
 public class BoardFrame extends JFrame {
@@ -20,8 +22,8 @@ public class BoardFrame extends JFrame {
     private void init() {
         Container contentPane = getContentPane();
         contentPane.add(boardCanvas);
-        setSize((Constants.BOARD_SIZE + 1) * Constants.CELL_SIZE + 30,
-                (Constants.BOARD_SIZE + 1) * Constants.CELL_SIZE + 70);
+        setSize((BOARD_SIZE + 1) * Constants.CELL_SIZE + 30,
+                (BOARD_SIZE + 1) * Constants.CELL_SIZE + 70);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle(TITLE);
         setVisible(true);
