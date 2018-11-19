@@ -3,6 +3,10 @@ package com.chrosciu.rxbattleships.gui;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+/**
+ * Convenient MouseListener interface with default empty implementation of all methods
+ * Allows implementors to implement selected methods only
+ */
 public interface MouseAdapter extends MouseListener {
     @Override
     default void mousePressed(MouseEvent e) {

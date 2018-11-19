@@ -2,6 +2,10 @@ package com.chrosciu.rxbattleships.model;
 
 import lombok.NonNull;
 
+/**
+ * Representation of Shot and its ShotResult
+ * For details @see Shot and ShotResult classes
+ */
 public class ShotWithResult extends Shot {
     @NonNull public final ShotResult shotResult;
 

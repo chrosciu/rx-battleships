@@ -34,6 +34,7 @@ public class ShipPlacementServiceImpl implements ShipPlacementService {
                 Ship ship = Ship.builder().x(x).y(y).size(size).horizontal(horizontal).build();
                 return ship;
             }
+            /* Artificial timeout to increase cost of method call */
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {

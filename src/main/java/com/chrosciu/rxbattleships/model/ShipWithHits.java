@@ -11,10 +11,20 @@ import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 @ToString
+/**
+ * Class representing ship with hits applied to it
+ */
 public class ShipWithHits {
     @NonNull private final Ship ship;
     private int hits = 0;
 
+    /**
+     * Take given shot and return shot with its results regarding this ship
+     * @param shot - shot to take
+     * @return - List of shots with results.
+     * If shot was missed (not hit the ship) or hit (but not sunk the ship) only one shot is returned
+     * If shot sunk the ship shots regarding all ship fields are returnd with SUNK status
+     */
     public List<ShotWithResult> takeShot(Shot shot) {
         if (!isHit(shot)) {
             return Collections.singletonList(ShotWithResult.of(shot, ShotResult.MISSED));
@@ -32,10 +42,19 @@ public class ShipWithHits {
         }
     }
 
+    /**
+     * Check if ship is already sunk
+     * @return - true if ship  is sunk, false otherwise
+     */
     public boolean isSunk() {
         return hits >= ship.size;
     }
 
+    /**
+     * Check if given shot affects the ship
+     * @param shot - shot to check
+     * @return - true if shot affects the ship, false otherwise
+     */
     public boolean isHit(Shot shot) {
         if (ship.horizontal) {
             return ship.y == shot.y && shot.x >= ship.x && shot.x < ship.x + ship.size;
