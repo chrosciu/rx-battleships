@@ -34,6 +34,11 @@ public class ShipPlacementServiceImpl implements ShipPlacementService {
                 Ship ship = Ship.builder().x(x).y(y).size(size).horizontal(horizontal).build();
                 return ship;
             }
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
     }

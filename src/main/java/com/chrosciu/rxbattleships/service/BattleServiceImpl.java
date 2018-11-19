@@ -40,14 +40,11 @@ public class BattleServiceImpl implements BattleService {
         shipsReadyMono = shipFluxService.getShipFlux()
                 .doOnNext(this::insertShip).then();
         shotResultFlux = shotFluxService.getShotFlux()
-                .take(20)
-                .timeout(Flux.never(), shot -> Mono.delay(Duration.of(10, ChronoUnit.SECONDS)))
                 .filter(this::noShotAlreadyHere)
                 .doOnNext(this::markShot)
                 .map(this::getShotResultsAfterShot)
                 .takeUntil(this::allSunk)
-                .flatMap(Flux::fromIterable)
-                .concatWith(Flux.error(new Exception("Too many shot attempts !")));
+                .flatMap(Flux::fromIterable);
     }
 
     private List<ShotWithResult> getShotResultsAfterShot(Shot shot) {
