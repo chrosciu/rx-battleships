@@ -82,13 +82,13 @@ public class BoardCanvas extends JComponent {
     @PostConstruct
     private void init() {
         battleService.getShipsReadyMono()
-                .subscribe(null, null, this::onShipsReady);
-        battleService.getShotResultFlux()
-                .subscribe(this::onShotPerformed, this::onError, this::onAllShipsSunk);
+                .subscribe(null, this::onError, this::onShipsReady);
     }
 
     private void onShipsReady() {
         alert(SHIPS_READY);
+        battleService.getShotResultFlux()
+                .subscribe(this::onShotPerformed, this::onError, this::onAllShipsSunk);
         timeMeasurer.start();
         gameState = GameState.STARTED;
         addMouseListener(mouseAdapter);
