@@ -24,5 +24,4 @@ public class FieldFluxServiceImpl implements FieldFluxService {
         fieldFlux = Flux.create(sink -> fieldFluxSink = sink);
         boardMouseAdapter.registerFieldListener(shot -> fieldFluxSink.next(shot));
     }
-
 }
