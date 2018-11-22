@@ -29,13 +29,13 @@ public class BattleServiceImpl implements BattleService {
     private Mono<Void> shipsReadyMono;
 
     @Getter
-    private Flux<Stamp> shotResultFlux;
+    private Flux<Stamp> stampFlux;
 
     @PostConstruct
     private void init() {
         shipsReadyMono = shipPositionFluxService.getShipPositionFlux()
                 .doOnNext(this::insertShipWithPosition).then();
-        shotResultFlux = fieldFluxService.getFieldFlux()
+        stampFlux = fieldFluxService.getFieldFlux()
                 .map(this::getShotResultsAfterShot)
                 .takeUntil(this::allSunk)
                 .flatMap(Flux::fromIterable);

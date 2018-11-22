@@ -19,5 +19,5 @@ public interface BattleService {
      * If after shot a ship is sunk Stamp objects for all ship fields (with SUNK status) should be signalled
      * @return Flux described above
      */
-    Flux<Stamp> getShotResultFlux();
+    Flux<Stamp> getStampFlux();
 }
