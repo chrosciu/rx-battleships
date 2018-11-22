@@ -1,11 +1,10 @@
 package com.chrosciu.rxbattleships.gui;
 
-import lombok.NonNull;
-
 public interface BoardMouseAdapter extends MouseAdapter {
     /**
-     * Register listener to be notified about performed shots
-     * @param shotListener - listener to be registered
+     * Register listener to be notified about clicked fields
+     * NOTE: Only one listener can be registered, registering next will discard previous one
+     * @param fieldClickListener - listener to be registered
      */
-    void registerShotListener(@NonNull ShotListener shotListener);
+    void registerFieldListener(FieldClickListener fieldClickListener);
 }

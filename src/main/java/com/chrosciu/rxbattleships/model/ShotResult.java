@@ -13,7 +13,7 @@ public enum ShotResult {
      */
     HIT,
     /**
-     * Ship has been hit by shot and then sunk
+     * Ship has been hit by shot and sunk
      */
     SUNK
 }

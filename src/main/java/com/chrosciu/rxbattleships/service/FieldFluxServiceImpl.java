@@ -1,7 +1,7 @@
 package com.chrosciu.rxbattleships.service;
 
 import com.chrosciu.rxbattleships.gui.BoardMouseAdapter;
-import com.chrosciu.rxbattleships.model.Shot;
+import com.chrosciu.rxbattleships.model.Field;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,18 +12,17 @@ import javax.annotation.PostConstruct;
 
 @Component
 @RequiredArgsConstructor
-public class ShotFluxServiceImpl implements ShotFluxService {
+public class FieldFluxServiceImpl implements FieldFluxService {
     private final BoardMouseAdapter boardMouseAdapter;
 
     @Getter
-    private Flux<Shot> shotFlux;
-
-    private FluxSink<Shot> shotFluxSink;
+    private Flux<Field> fieldFlux;
+    private FluxSink<Field> fieldFluxSink;
 
     @PostConstruct
     private void init() {
-        shotFlux = Flux.create(sink -> shotFluxSink = sink);
-        boardMouseAdapter.registerShotListener(shot -> shotFluxSink.next(shot));
+        fieldFlux = Flux.create(sink -> fieldFluxSink = sink);
+        boardMouseAdapter.registerFieldListener(shot -> fieldFluxSink.next(shot));
     }
 
 }

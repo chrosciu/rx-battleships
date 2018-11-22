@@ -1,29 +1,86 @@
 package com.chrosciu.rxbattleships.model;
 
-import lombok.Builder;
-import lombok.ToString;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-@Builder
-@ToString
 /**
- * Ship representation on board
+ * Ship representation (with hits counter)
  */
 public class Ship {
     /**
-     * Horizontal coordinate of first ship cell
-     * For horizontal ships first cell is the most left one, for vertical ones - the most top one
+     * Ship position on board
      */
-    public final int x;
+    public final ShipPosition position;
     /**
-     * Vertical coordinate of first ship cell
+     * Array describing whether a field which forms a ship has been already hit.
+     * For horizontally placed ships fields are represented in array from left to right,
+     * for vertical ones - from top to bottom
      */
-    public final int y;
+    private boolean[] hits;
+
     /**
-     * Size of ship
+     * Construct ship with given position
+     * @param position - ship position
      */
-    public final int size;
+    public Ship(ShipPosition position) {
+        this.position = position;
+        this.hits = new boolean[position.size];
+    }
+
     /**
-     * True if ship is placed horizontally, false - if vertically
+     * Take shot at given field and return shot result regarding this ship
+     * @param field - field where shot is taken
+     * @return - Result of shot for given ship
      */
-    public final boolean horizontal;
+    public ShotResult takeShot(Field field) {
+        int index = getFieldIndex(field);
+        if (index >= 0) {
+            hits[index] = true;
+            return isSunk() ? ShotResult.SUNK : ShotResult.HIT;
+        }
+        return ShotResult.MISSED;
+    }
+
+    /**
+     * Check if ship is already sunk
+     * @return - true if ship  is sunk, false otherwise
+     */
+    public boolean isSunk() {
+        return IntStream.range(0, hits.length).allMatch(i -> hits[i]);
+    }
+
+    /**
+     * Get all fields which form this ship
+     * @return - fields described above
+     */
+    public List<Field> getAllFields() {
+        return IntStream.range(0, position.size).mapToObj(value -> position.horizontal ?
+                new Field(position.firstField.x + value, position.firstField.y)
+                : new Field(position.firstField.x, position.firstField.y + value)).collect(Collectors.toList());
+    }
+
+    private int getFieldIndex(Field field) {
+        int index = -1;
+        if (position.horizontal) {
+            if (position.firstField.y == field.y) {
+                index = field.x - position.firstField.x;
+            }
+        } else {
+            if (position.firstField.x == field.x) {
+                index = field.y - position.firstField.y;
+            }
+        }
+        if (index >= position.size) {
+            index = -1;
+        }
+        return index;
+    }
+
+
+
+
+
+
+
 }

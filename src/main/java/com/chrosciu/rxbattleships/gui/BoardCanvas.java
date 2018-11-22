@@ -1,7 +1,7 @@
 package com.chrosciu.rxbattleships.gui;
 
 import com.chrosciu.rxbattleships.model.ShotResult;
-import com.chrosciu.rxbattleships.model.ShotWithResult;
+import com.chrosciu.rxbattleships.model.Stamp;
 import com.chrosciu.rxbattleships.service.BattleService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -95,8 +95,8 @@ public class BoardCanvas extends JComponent {
         repaint();
     }
 
-    private void onShotPerformed(ShotWithResult shotWithResult) {
-        shotResults[shotWithResult.x][shotWithResult.y] = shotWithResult.shotResult;
+    private void onShotPerformed(Stamp stamp) {
+        shotResults[stamp.field.x][stamp.field.y] = stamp.result;
         repaint();
     }
 

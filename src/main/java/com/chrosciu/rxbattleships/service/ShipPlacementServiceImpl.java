@@ -1,7 +1,8 @@
 package com.chrosciu.rxbattleships.service;
 
 import com.chrosciu.rxbattleships.config.Constants;
-import com.chrosciu.rxbattleships.model.Ship;
+import com.chrosciu.rxbattleships.model.Field;
+import com.chrosciu.rxbattleships.model.ShipPosition;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -9,7 +10,7 @@ public class ShipPlacementServiceImpl implements ShipPlacementService {
     private boolean[][] ships = new boolean[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
 
     @Override
-    public Ship placeShip(int size) {
+    public ShipPosition placeShip(int size) {
         while (true) {
             int x;
             int y;
@@ -31,8 +32,7 @@ public class ShipPlacementServiceImpl implements ShipPlacementService {
                         ships[x][y+i] = true;
                     }
                 }
-                Ship ship = Ship.builder().x(x).y(y).size(size).horizontal(horizontal).build();
-                return ship;
+                return new ShipPosition(new Field(x,y), size, horizontal);
             }
             /* Artificial timeout to increase cost of method call */
             try {

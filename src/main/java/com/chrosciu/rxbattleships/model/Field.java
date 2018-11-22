@@ -1,13 +1,14 @@
 package com.chrosciu.rxbattleships.model;
 
-import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 
-@Builder
+
 /**
- * Shot representation on board
- * NOTE: (0,0) coordinates represents the top left cell on board
+ * Field representation on board
+ * NOTE: (0,0) coordinates represent the top left cell on board
  */
-public class Shot {
+@RequiredArgsConstructor
+public class Field {
     /**
      * Horizontal coordinate of shot
      */
