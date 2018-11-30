@@ -4,15 +4,19 @@ import com.chrosciu.rxbattleships.config.Constants;
 import com.chrosciu.rxbattleships.model.ShipPosition;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ShipPositionFluxServiceImpl implements ShipPositionFluxService {
     private final ShipPlacementService shipPlacementService;
 
@@ -22,10 +26,10 @@ public class ShipPositionFluxServiceImpl implements ShipPositionFluxService {
 
     @PostConstruct
     private void init() {
-        shipPositionFlux = Flux.create(sink -> {
+        shipPositionFlux = Flux.<ShipPosition>create(sink -> {
             shipPositionFluxSink = sink;
-            new Thread(this::placeShips).start();
-        });
+            placeShips();
+        }).subscribeOn(Schedulers.single());
     }
 
     private void placeShips() {
