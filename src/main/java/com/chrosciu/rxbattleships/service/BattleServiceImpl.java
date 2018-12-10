@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class BattleServiceImpl implements BattleService {
     private final ShipPositionFluxService shipPositionFluxService;
     private final FieldFluxService fieldFluxService;
+    private final ShipService shipService;
 
     private List<Ship> ships = new ArrayList<>();
 
