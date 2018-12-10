@@ -32,6 +32,12 @@ public class BattleServiceImpl implements BattleService {
     @Getter
     private Flux<Stamp> stampFlux;
 
+    @RequiredArgsConstructor
+    private class AffectedShipAndResult {
+        public final Ship ship;
+        public final ShotResult result;
+    }
+
     @PostConstruct
     private void init() {
         shipsReadyMono = shipPositionFluxService.getShipPositionFlux()
@@ -43,23 +49,24 @@ public class BattleServiceImpl implements BattleService {
     }
 
     private List<Stamp> getShotResultsAfterShot(Field field) {
-        Ship affectedShip = null;
-        ShotResult affectedShipResult = ShotResult.MISSED;
-        for (Ship ship: ships) {
-            ShotResult result = shipService.takeShot(ship, field);
-            if (ShotResult.MISSED == result) {
-                continue;
-            }
-            affectedShip = ship;
-            affectedShipResult = result;
-            break;
-        }
-        if (ShotResult.SUNK == affectedShipResult) {
-            return shipService.getAllFields(affectedShip).stream()
+        AffectedShipAndResult affectedShipAndResult = getAffectedShipAndResultAfterShot(field);
+        ShotResult result = affectedShipAndResult.result;
+        if (ShotResult.SUNK == result) {
+            return shipService.getAllFields(affectedShipAndResult.ship).stream()
                     .map(f -> new Stamp(f, ShotResult.SUNK)).collect(Collectors.toList());
         } else {
-            return Collections.singletonList(new Stamp(field, affectedShipResult));
+            return Collections.singletonList(new Stamp(field, result));
         }
+    }
+
+    private AffectedShipAndResult getAffectedShipAndResultAfterShot(Field field) {
+        for (Ship ship: ships) {
+            ShotResult result = shipService.takeShot(ship, field);
+            if (ShotResult.HIT == result || ShotResult.SUNK == result) {
+                return new AffectedShipAndResult(ship, result);
+            }
+        }
+        return new AffectedShipAndResult(null, ShotResult.MISSED);
     }
 
     private void insertShipWithPosition(ShipPosition position) {
