@@ -12,7 +12,6 @@ import reactor.core.publisher.Mono;
 public class BattleServiceImpl implements BattleService {
     private final ShipPositionFluxService shipPositionFluxService;
     private final FieldFluxService fieldFluxService;
-    private final ShipService shipService;
 
     @Override
     public Mono<Void> getShipsReadyMono() {

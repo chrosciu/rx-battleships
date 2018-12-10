@@ -10,6 +10,7 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 public class ShipPositionFluxServiceImpl implements ShipPositionFluxService {
     private final ShipPlacementService shipPlacementService;
+    private final ConstantsService constantsService;
 
     @Override
     public Flux<ShipPosition> getShipPositionFlux() {

@@ -1,11 +1,15 @@
 package com.chrosciu.rxbattleships.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
  * Ship position on board
  */
 @RequiredArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class ShipPosition {
     /**
      * Field where first ship field is located.
