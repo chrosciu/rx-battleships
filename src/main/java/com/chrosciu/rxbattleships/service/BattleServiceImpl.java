@@ -46,7 +46,7 @@ public class BattleServiceImpl implements BattleService {
         Ship affectedShip = null;
         ShotResult affectedShipResult = ShotResult.MISSED;
         for (Ship ship: ships) {
-            ShotResult result = ship.takeShot(field);
+            ShotResult result = shipService.takeShot(ship, field);
             if (ShotResult.MISSED == result) {
                 continue;
             }
@@ -55,7 +55,7 @@ public class BattleServiceImpl implements BattleService {
             break;
         }
         if (ShotResult.SUNK == affectedShipResult) {
-            return affectedShip.getAllFields().stream()
+            return shipService.getAllFields(affectedShip).stream()
                     .map(f -> new Stamp(f, ShotResult.SUNK)).collect(Collectors.toList());
         } else {
             return Collections.singletonList(new Stamp(field, affectedShipResult));
@@ -67,6 +67,6 @@ public class BattleServiceImpl implements BattleService {
     }
 
     private boolean allSunk(List<Stamp> stamps) {
-        return ships.stream().allMatch(Ship::isSunk);
+        return ships.stream().allMatch(shipService::isSunk);
     }
 }
