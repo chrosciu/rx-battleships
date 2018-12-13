@@ -19,6 +19,7 @@ import java.util.Arrays;
 @Slf4j
 public class ShipPositionFluxServiceImpl implements ShipPositionFluxService {
     private final ShipPlacementService shipPlacementService;
+    private final ConstantsService constantsService;
 
     @Getter
     private Flux<ShipPosition> shipPositionFlux;

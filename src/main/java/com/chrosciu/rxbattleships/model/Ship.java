@@ -1,26 +1,27 @@
 package com.chrosciu.rxbattleships.model;
 
+import java.util.List;
+
 /**
  * Ship representation (with hits counter)
  */
-public class Ship {
+public interface Ship {
     /**
-     * Ship position on board
+     * Take shot at given field and return shot result regarding this ship
+     * @param field - field where shot is taken
+     * @return - Result of shot for given ship
      */
-    public final ShipPosition position;
-    /**
-     * Array describing whether a field which forms a ship has been already hit.
-     * For horizontally placed ships fields are represented in array from left to right,
-     * for vertical ones - from top to bottom
-     */
-    public final boolean[] hits;
+    ShotResult takeShot(Field field);
 
     /**
-     * Construct ship with given position
-     * @param position - ship position
+     * Check if this ship is already sunk
+     * @return - true if ship is sunk, false otherwise
      */
-    public Ship(ShipPosition position) {
-        this.position = position;
-        this.hits = new boolean[position.size];
-    }
+    boolean isSunk();
+
+    /**
+     * Get all fields which form this ship
+     * @return - fields described above
+     */
+    List<Field> getAllFields();
 }
