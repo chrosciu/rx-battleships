@@ -3,7 +3,6 @@ package com.chrosciu.rxbattleships.service;
 import com.chrosciu.rxbattleships.gui.BoardMouseAdapter;
 import com.chrosciu.rxbattleships.gui.FieldClickListener;
 import com.chrosciu.rxbattleships.model.Field;
-import org.junit.Ignore;
 import org.junit.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -23,7 +22,6 @@ public class FieldFluxServiceTest {
     private List<Field> fields = Arrays.asList(new Field(0, 0), new Field(1, 2));
 
     @Test
-    @Ignore
     public void getFieldFluxTest() {
         //given
         doAnswer(invocationOnMock -> {

@@ -4,7 +4,6 @@ import com.chrosciu.rxbattleships.model.Field;
 import com.chrosciu.rxbattleships.model.ShipPosition;
 import com.chrosciu.rxbattleships.model.ShotResult;
 import com.chrosciu.rxbattleships.model.Stamp;
-import org.junit.Ignore;
 import org.junit.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -25,7 +24,6 @@ public class BattleServiceTest {
     private BattleService battleService = new BattleServiceImpl(shipPositionFluxService, fieldFluxService);
 
     @Test
-    @Ignore
     public void getShipsReadyMonoTest() {
         //given
         ShipPosition firstPosition = new ShipPosition(new Field(0, 0), 1, true);
@@ -55,7 +53,6 @@ public class BattleServiceTest {
     }
 
     @Test
-    @Ignore
     public void getStampFluxTest() {
         //given
         List<Field> fields = Arrays.asList(
