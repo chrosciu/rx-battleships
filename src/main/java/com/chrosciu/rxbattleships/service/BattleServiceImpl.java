@@ -2,16 +2,15 @@ package com.chrosciu.rxbattleships.service;
 
 import com.chrosciu.rxbattleships.model.Field;
 import com.chrosciu.rxbattleships.model.Ship;
+import com.chrosciu.rxbattleships.model.ShipBuilder;
 import com.chrosciu.rxbattleships.model.ShipPosition;
 import com.chrosciu.rxbattleships.model.ShotResult;
 import com.chrosciu.rxbattleships.model.Stamp;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,10 +24,8 @@ public class BattleServiceImpl implements BattleService {
 
     private List<Ship> ships = new ArrayList<>();
 
-    @Getter
     private Mono<Void> shipsReadyMono;
 
-    @Getter
     private Flux<Stamp> stampFlux;
 
     @RequiredArgsConstructor
@@ -37,11 +34,27 @@ public class BattleServiceImpl implements BattleService {
         public final ShotResult result;
     }
 
-    @PostConstruct
-    private void init() {
-        shipsReadyMono = shipPositionFluxService.getShipPositionFlux()
+    public Mono<Void> getShipsReadyMono() {
+        if (null == shipsReadyMono) {
+            shipsReadyMono = createShipsReadyMono();
+        }
+        return shipsReadyMono;
+    }
+
+    public Flux<Stamp> getStampFlux() {
+        if (null == stampFlux) {
+            stampFlux = createStampFlux();
+        }
+        return stampFlux;
+    }
+
+    private Mono<Void> createShipsReadyMono() {
+        return shipPositionFluxService.getShipPositionFlux()
                 .doOnNext(this::insertShipWithPosition).then();
-        stampFlux = fieldFluxService.getFieldFlux()
+    }
+
+    private Flux<Stamp> createStampFlux() {
+        return fieldFluxService.getFieldFlux()
                 .map(this::getShotResultsAfterShot)
                 .takeUntil(this::allSunk)
                 .flatMap(Flux::fromIterable);
@@ -51,7 +64,7 @@ public class BattleServiceImpl implements BattleService {
         AffectedShipAndResult affectedShipAndResult = getAffectedShipAndResultAfterShot(field);
         ShotResult result = affectedShipAndResult.result;
         if (ShotResult.SUNK == result) {
-            return shipService.getAllFields(affectedShipAndResult.ship).stream()
+            return affectedShipAndResult.ship.getAllFields().stream()
                     .map(f -> new Stamp(f, ShotResult.SUNK)).collect(Collectors.toList());
         } else {
             return Collections.singletonList(new Stamp(field, result));
@@ -60,7 +73,7 @@ public class BattleServiceImpl implements BattleService {
 
     private AffectedShipAndResult getAffectedShipAndResultAfterShot(Field field) {
         for (Ship ship: ships) {
-            ShotResult result = shipService.takeShot(ship, field);
+            ShotResult result = ship.takeShot(field);
             if (ShotResult.HIT == result || ShotResult.SUNK == result) {
                 return new AffectedShipAndResult(ship, result);
             }
@@ -69,10 +82,10 @@ public class BattleServiceImpl implements BattleService {
     }
 
     private void insertShipWithPosition(ShipPosition position) {
-        ships.add(new Ship(position));
+        ships.add(ShipBuilder.buildShip(position));
     }
 
     private boolean allSunk(List<Stamp> stamps) {
-        return ships.stream().allMatch(shipService::isSunk);
+        return ships.stream().allMatch(Ship::isSunk);
     }
 }
