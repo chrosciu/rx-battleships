@@ -19,8 +19,8 @@ public class ShipPlacementServiceImpl implements ShipPlacementService {
             int x;
             int y;
             boolean horizontal = randomService.booleanRandom();
-            int a = (int) ((Constants.BOARD_SIZE + 1 - size) * randomService.random()) % (Constants.BOARD_SIZE + 1 - size);
-            int b = (int) (Constants.BOARD_SIZE * randomService.random()) % Constants.BOARD_SIZE;
+            int a = randomService.intRandom(Constants.BOARD_SIZE - (size - 1));
+            int b = randomService.intRandom(Constants.BOARD_SIZE);
             if (horizontal) {
                 x = a;
                 y = b;

@@ -1,6 +1,6 @@
 package com.chrosciu.rxbattleships.service;
 
 public interface RandomService {
-    double random();
+    int intRandom(int range);
     boolean booleanRandom();
 }

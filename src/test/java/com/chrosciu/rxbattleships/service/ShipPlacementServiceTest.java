@@ -1,5 +1,6 @@
 package com.chrosciu.rxbattleships.service;
 
+import com.chrosciu.rxbattleships.config.Constants;
 import com.chrosciu.rxbattleships.model.Field;
 import com.chrosciu.rxbattleships.model.ShipPosition;
 import org.junit.Assert;
@@ -18,8 +19,10 @@ public class ShipPlacementServiceTest {
     @Test
     public void placeShipTest() {
         //given
-        when(randomService.random()).thenReturn( 0.2, 0.3, 0.5, 0.6, 0.8, 0.9);
         when(randomService.booleanRandom()).thenReturn(true, true, false);
+        when(randomService.intRandom(Constants.BOARD_SIZE - (3 - 1))).thenReturn(1, 4);
+        when(randomService.intRandom(Constants.BOARD_SIZE - (2 - 1))).thenReturn(7);
+        when(randomService.intRandom(Constants.BOARD_SIZE)).thenReturn(3, 6, 9);
 
         //when
         ShipPosition firstShipPosition = shipPlacementService.placeShip(3);

@@ -5,8 +5,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class RandomServiceImpl implements RandomService {
     @Override
-    public double random() {
-        return Math.random();
+    public int intRandom(int range) {
+        if (range <= 0) {
+            throw new IllegalArgumentException("Range must be positive integer");
+        }
+        return (int)(Math.random() * range) % range;
     }
 
     @Override
