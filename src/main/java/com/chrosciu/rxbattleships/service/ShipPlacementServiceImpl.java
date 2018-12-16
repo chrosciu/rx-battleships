@@ -3,10 +3,14 @@ package com.chrosciu.rxbattleships.service;
 import com.chrosciu.rxbattleships.config.Constants;
 import com.chrosciu.rxbattleships.model.Field;
 import com.chrosciu.rxbattleships.model.ShipPosition;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ShipPlacementServiceImpl implements ShipPlacementService {
+    private final RandomService randomService;
+
     private boolean[][] ships = new boolean[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
 
     @Override
@@ -14,9 +18,9 @@ public class ShipPlacementServiceImpl implements ShipPlacementService {
         while (true) {
             int x;
             int y;
-            boolean horizontal = Math.random() < 0.5;
-            int a = (int) ((Constants.BOARD_SIZE + 1 - size) * Math.random()) % (Constants.BOARD_SIZE + 1 - size);
-            int b = (int) (Constants.BOARD_SIZE * Math.random()) % Constants.BOARD_SIZE;
+            boolean horizontal = randomService.booleanRandom();
+            int a = (int) ((Constants.BOARD_SIZE + 1 - size) * randomService.random()) % (Constants.BOARD_SIZE + 1 - size);
+            int b = (int) (Constants.BOARD_SIZE * randomService.random()) % Constants.BOARD_SIZE;
             if (horizontal) {
                 x = a;
                 y = b;
