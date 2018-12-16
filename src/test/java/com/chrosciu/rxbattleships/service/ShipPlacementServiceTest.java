@@ -19,10 +19,10 @@ public class ShipPlacementServiceTest {
     @Test
     public void placeShipTest() {
         //given
-        when(randomService.booleanRandom()).thenReturn(true, true, false);
-        when(randomService.intRandom(Constants.BOARD_SIZE - (3 - 1))).thenReturn(1, 4);
+        when(randomService.booleanRandom()).thenReturn(true, true, true, true, false);
+        when(randomService.intRandom(Constants.BOARD_SIZE - (3 - 1))).thenReturn(1, 2, 0, 4);
         when(randomService.intRandom(Constants.BOARD_SIZE - (2 - 1))).thenReturn(7);
-        when(randomService.intRandom(Constants.BOARD_SIZE)).thenReturn(3, 6, 9);
+        when(randomService.intRandom(Constants.BOARD_SIZE)).thenReturn(3, 3, 2, 6, 9);
 
         //when
         ShipPosition firstShipPosition = shipPlacementService.placeShip(3);
