@@ -2,7 +2,6 @@ package com.chrosciu.rxbattleships.service;
 
 import com.chrosciu.rxbattleships.model.Field;
 import com.chrosciu.rxbattleships.model.ShipPosition;
-import org.junit.Ignore;
 import org.junit.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -21,7 +20,6 @@ public class ShipPositionFluxServiceTest {
     private final ShipPosition secondShipPosition = new ShipPosition(new Field(2, 3), shipSizes[1], false);
 
     @Test
-    @Ignore
     public void getShipPositionFluxTest() {
         //given
         when(constantsService.getShipSizes()).thenReturn(shipSizes);
