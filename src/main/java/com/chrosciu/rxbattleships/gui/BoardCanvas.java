@@ -87,10 +87,10 @@ public class BoardCanvas extends JComponent {
 
     private void onShipsReady() {
         alert(SHIPS_READY);
-        battleService.getStampFlux()
-                .subscribe(this::onShotPerformed, this::onError, this::onAllShipsSunk);
         timeMeasurer.start();
         gameState = GameState.STARTED;
+        battleService.getStampFlux()
+                .subscribe(this::onShotPerformed, this::onError, this::onAllShipsSunk);
         addMouseListener(mouseAdapter);
         repaint();
     }
